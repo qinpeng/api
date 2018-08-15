@@ -4,8 +4,7 @@ public class ResponseVo {
 
   private String code;
   private String message;
-  private String respData;
-  private String signature;
+  private String data;
 
   public String getCode() {
     return code;
@@ -23,20 +22,12 @@ public class ResponseVo {
     this.message = message;
   }
 
-  public String getRespData() {
-    return respData;
+  public String getData() {
+    return data;
   }
 
-  public void setRespData(String respData) {
-    this.respData = respData;
-  }
-
-  public String getSignature() {
-    return signature;
-  }
-
-  public void setSignature(String signature) {
-    this.signature = signature;
+  public void setData(String data) {
+    this.data = data;
   }
 
   @Override
@@ -44,8 +35,7 @@ public class ResponseVo {
     return "ResponseVo{" +
         "code='" + code + '\'' +
         ", message='" + message + '\'' +
-        ", respData='" + respData + '\'' +
-        ", signature='" + signature + '\'' +
+        ", data='" + data + '\'' +
         '}';
   }
 }

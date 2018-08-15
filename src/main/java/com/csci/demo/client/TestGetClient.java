@@ -22,7 +22,7 @@ public class TestGetClient extends BaseClient {
     urlParamMap.put("extendUserId", "user12345");
 
     //组装待加签数据
-    String signatureSrcData = createSignatureSrcDataForRequest(uri, SEPARATOR, urlParamMap, null);
+    String signatureSrcData = createSignatureSrcData(uri, SEPARATOR, urlParamMap, null);
     System.out.println("signatureSrcData = " + signatureSrcData);
 
     //加签

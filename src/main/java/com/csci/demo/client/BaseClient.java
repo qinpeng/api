@@ -38,7 +38,7 @@ public class BaseClient {
    * @param requestBody 请求报文
    * @return 加签原始数据
    */
-  public static String createSignatureSrcDataForRequest(String uri, String separator,
+  public static String createSignatureSrcData(String uri, String separator,
       Map<String, ?> urlParamMap,
       String requestBody) {
     return new StringBuffer(uri)
@@ -48,31 +48,14 @@ public class BaseClient {
         .toString();
   }
 
-  /**
-   * 接收报文之后，组装加签的原始数据
-   */
-  private static String createSignSrcDataForResponse(ResponseVo responseVo) {
-    return responseVo.getCode() == null ? "" : responseVo.getCode() +
-        responseVo.getMessage() == null ? "" : responseVo.getMessage() +
-        responseVo.getRespData() == null ? "" : responseVo.getRespData();
-  }
-
   //解析返回结果，并解密业务数据
   public static ResponseVo parseResponse(String httpResponse) throws Exception {
     ResponseVo responseVo = JsonUtil.json2Object(httpResponse, ResponseVo.class);
-    //验证签名
-    boolean verify = RSAUtils
-        .verify(createSignSrcDataForResponse(responseVo), ZZ_PUBLIC_KEY, responseVo.getSignature());
-    if (!verify) {
-      throw new RuntimeException("验签失败");
-    }
-    System.out.println("验签成功");
-
     //解密业务数据
-    String respData = responseVo.getRespData();
+    String respData = responseVo.getData();
     if (respData != null) {
       String decryptRespData = RSAUtils.decryptByPrivateKey(respData, PRIVATE_KEY);
-      responseVo.setRespData(decryptRespData);
+      responseVo.setData(decryptRespData);
     }
     return responseVo;
   }

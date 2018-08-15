@@ -31,7 +31,7 @@ public class TestPostClient extends BaseClient {
 
     //获取待加签数据
     String signatureSrcData = BaseClient
-        .createSignatureSrcDataForRequest(uri, SEPARATOR, null, encryptRequestBody);
+        .createSignatureSrcData(uri, SEPARATOR, null, encryptRequestBody);
     System.out.println("signatureSrcData = " + signatureSrcData);
     //加签
     String signature = RSAUtils.sign(signatureSrcData, PRIVATE_KEY);
