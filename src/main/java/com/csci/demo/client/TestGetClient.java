@@ -38,7 +38,7 @@ public class TestGetClient extends BaseClient {
     //发送请求
     String url = BASE_PATH + uri;
     String response = HttpUtil.get(url, urlParamMap, headerMap);
-    //解析返回结果【包括验签与解密】
+    //解析返回结果【解密data节点】
     ResponseVo responseVo = parseResponse(response);
     System.out.println("返回结果：" + responseVo);
   }

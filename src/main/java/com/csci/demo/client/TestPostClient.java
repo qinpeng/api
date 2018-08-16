@@ -45,7 +45,7 @@ public class TestPostClient extends BaseClient {
     headerMap.put("nonce", encryptedNonce);
     System.out.println("signature = " + signature);
     String response = HttpUtil.post(url, encryptRequestBody, CONTENT_TYPE, null, headerMap);
-    //解析返回结果【包括验签与解密】
+    //解析返回结果【解密data节点】
     ResponseVo responseVo = parseResponse(response);
     System.out.println("返回结果：" + responseVo);
   }
