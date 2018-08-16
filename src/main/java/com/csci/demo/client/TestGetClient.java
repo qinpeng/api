@@ -30,7 +30,6 @@ public class TestGetClient extends BaseClient {
 
     //组装request header
     Map<String, String> headerMap = new HashMap<>();
-    headerMap.put("Content-Type", CONTENT_TYPE);
     headerMap.put("channelCode", CHANNEL_CODE);
     headerMap.put("signature", signature);
     System.out.println("signature = " + signature);

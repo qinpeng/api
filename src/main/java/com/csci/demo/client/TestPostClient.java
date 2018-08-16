@@ -39,12 +39,11 @@ public class TestPostClient extends BaseClient {
     //发送请求
     String url = BASE_PATH + uri;
     Map<String, String> headerMap = new HashMap<>();
-    headerMap.put("Content-Type", CONTENT_TYPE);
     headerMap.put("channelCode", CHANNEL_CODE);
     headerMap.put("signature", signature);
     headerMap.put("nonce", encryptedNonce);
     System.out.println("signature = " + signature);
-    String response = HttpUtil.post(url, encryptRequestBody, CONTENT_TYPE, null, headerMap);
+    String response = HttpUtil.postJson(url, encryptRequestBody, null, headerMap);
     //解析返回结果【解密data节点】
     ResponseVo responseVo = parseResponse(response);
     System.out.println("返回结果：" + responseVo);

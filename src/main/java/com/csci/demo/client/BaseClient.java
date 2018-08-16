@@ -17,9 +17,6 @@ public class BaseClient {
   //渠道编号，中证提供
   public static final String CHANNEL_CODE = "LIAN_LIAN";
 
-  //调用中证API时，指定的contentType，中证提供
-  public static final String CONTENT_TYPE = "application/csci-text";
-
   //中证的RSA公钥，一般放在配置里，中证提供
   public static final String ZZ_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5R6I0zL8H9dc7Jf/9GskIedZxl8aDlLXpUcKrStVhfdaXdugXa8eEid9k4T1WnvCqht9IAPLIsyRiBgoSsitRqkwrHDs3HsyLDnAw5jUo8uhKyMK4pCzrkbuAJvXya6RtLEHJUMfrxNJBpVXaZacp3RZ7XGdg5WrlSohKKSMfh8PsLBVwMLxp179SDmPO+I/NVxcP/g2CDPx+wO2hpLEDfRvUZXjgdgUxieC7hzd3ppAkSH7fT06sb2JMO2TirG4IH2Z7pN37/EPYIYprPTjKmPDrEdSaZEdJuOsasIk1DSas12jWUxvkc4STZstiujxGkQB/r/WyQ3z3JliqkKhcwIDAQAB";
 
