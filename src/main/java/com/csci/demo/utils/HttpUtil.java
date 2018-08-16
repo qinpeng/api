@@ -1,5 +1,6 @@
 package com.csci.demo.utils;
 
+import com.csci.demo.model.vo.ResponseVo;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -105,7 +106,20 @@ public class HttpUtil {
 
     //校验返回
     if (!response.isSuccessful()) {
-      throw new RuntimeException("出错了，错误信息：" + response);
+      //解析错误信息
+      String repsStr = response.body().string();
+      ResponseVo responseVo = JsonUtil.json2Object(repsStr, ResponseVo.class);
+      if (responseVo == null || responseVo.getCode() == null) {
+        throw new RuntimeException(
+            "HttpClient调用失败"
+                + ", httpStatus=" + response.code()
+                + ", URL=" + response.request().url()
+                + ", 错误信息：" + response.message());
+      } else {
+        throw new RuntimeException("HttpClient调用失败"
+            + ", URL=" + response.request().url()
+            + "，错误信息：" + responseVo.getMessage());
+      }
     }
     return response.body().string();
   }
