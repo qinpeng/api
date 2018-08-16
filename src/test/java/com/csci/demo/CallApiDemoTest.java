@@ -28,7 +28,10 @@ public class CallApiDemoTest {
   //自己生成的RSA公钥，长度2048，需要提供给中证
   public static final String PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqYf2abIhq8oGFwTIVTY9sTOCQvSDlAFoa5AVB0s7lMlJ9V4G1dF7nZns7dUl29go7Eki/IzwuU+HsPyeSe9IqabMdD5rIWx5UJhHm8dQ4W6hFrDZf7d1hcYGpeCxLYyV/kccBg6LJWKkJTazQpCk1VqEEEJcX+ZIxN5skCEytpXNBcyHyPiZjzihk0l4UlqFOeF+TDI8FZ0Q4HnjyvA6up49nkYuJljyWqCXlbW4/jgNCbZZFklRcC5mlv2KlI7xS9a8z+r0Zt/7oEwyeAjK2qwwRg1OCuST6Nvk7h5dnm7e4WDhCtdsmu6iHjocbRK6DwDi8A6Z327ObCPCbwP3MwIDAQAB";
 
-
+  /**
+   * 对应接口：【测试接口1】
+   * 接口文档：【DEMO-快速对接文档.html】
+   */
   @Test
   public void testGet() throws Exception {
     //请求uri
@@ -49,6 +52,10 @@ public class CallApiDemoTest {
     Assert.assertTrue("SUCCESS".equals(responseVo.getCode()));
   }
 
+  /**
+   * 对应接口：【测试接口2】
+   * 接口文档：【DEMO-快速对接文档.html】
+   */
   @Test
   public void testPost() throws Exception {
     //请求uri
