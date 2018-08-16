@@ -6,3 +6,6 @@ bin/
 *.iml
 *.bat
 .DS_Store
+
+# 忽略自测客户端
+projectTest/
