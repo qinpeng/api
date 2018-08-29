@@ -151,7 +151,7 @@ signature: fuRDt+IQ0e83DB+0YZU7Ih/4pqSYxpqrEprNpyx742rTGJjKKVVbByY38II+3iJXKrw+F
 
 nonce:HtPgqBYgcORsvrqKcpSR8L+/iYv+vYQnaFDq8X5arKc0k/AHyLJsRToavKHo8Q4EQJBC7Xv/9+N1HW3hyWbJIrBIr7Nvf3ss4oUk+UR8vlGDplCIRyiD+BFgsPFqQW2gw1gEkqrl3HdQFS05DdhFmP5XvuDKhH6/47ep95PII16fb8qEynwGAZTetoWVRbGNt62rs/0B5b8X+C3oaLKLOh/3iKJQKCRHAaUMfTbeMTLrQF7tbCcUBKt6m2I7S34yYvBnJ/JGgTZrbi/v52UpdBygrAZdkDCqQ/RB0iE4d8/pP/ui/MqqqSrHxMOQp3kllLr7L5fxfVGJRFfGRb/0hQ==
 
-Content-type:application/csci-text
+Content-type:application/json
 channelCode:LIAN_LIAN
 Method: POST
 ```

@@ -14,7 +14,7 @@ public class CallApiDemoTest {
   public static final String SEPARATOR = "@";
 
   //中证域名，中证提供
-  public static final String BASE_PATH = "http://localhost:8080";
+  public static final String BASE_PATH = "http://scpgateway-ls.dev.chinacsci.com";
 
   //渠道编号，中证提供
   public static final String CHANNEL_CODE = "LIAN_LIAN";
