@@ -80,7 +80,7 @@ public class CallApiDemoTest {
   @Test
   public void creditResultQuery() throws Exception {
     //请求uri
-    String uri = String.format("/api/v1/credit/%s/query","123");
+    String uri = String.format("/api/mock/v1/credit/%s/query","123");
 
 
 
