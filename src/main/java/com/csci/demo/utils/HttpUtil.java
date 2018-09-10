@@ -36,7 +36,7 @@ public class HttpUtil {
     okHttpClient = new OkHttpClient.Builder()
         .connectTimeout(60000L, TimeUnit.MILLISECONDS)
         .readTimeout(60000L, TimeUnit.MILLISECONDS)
-        .writeTimeout(60000L, TimeUnit.MICROSECONDS)
+        .writeTimeout(60000L, TimeUnit.MILLISECONDS)
 //        .addInterceptor(httpLoggingInterceptor)
         .build();
   }
