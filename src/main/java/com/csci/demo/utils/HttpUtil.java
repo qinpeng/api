@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import javax.ws.rs.HttpMethod;
 import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.Headers;
@@ -13,7 +14,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import okio.BufferedSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,13 +31,10 @@ public class HttpUtil {
   private static final OkHttpClient okHttpClient;
 
   static {
-    HttpLoggingInterceptor httpLoggingInterceptor = new HttpLoggingInterceptor(new HttpLogger(log));
-    httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
     okHttpClient = new OkHttpClient.Builder()
         .connectTimeout(60000L, TimeUnit.MILLISECONDS)
         .readTimeout(60000L, TimeUnit.MILLISECONDS)
         .writeTimeout(60000L, TimeUnit.MILLISECONDS)
-//        .addInterceptor(httpLoggingInterceptor)
         .build();
   }
 
@@ -45,7 +42,7 @@ public class HttpUtil {
   public static String get(String url, Map<String, String> queryMap,
       Map<String, String> headerMap) throws IOException {
     url = url + createOrderedUrlParamFromMap(queryMap);
-    return execute(url, null, headerMap);
+    return execute(HttpMethod.GET,url, null, headerMap);
   }
 
   //form表单提交
@@ -57,7 +54,7 @@ public class HttpUtil {
     }
     FormBody formBody = requestBodyBuilder.build();
     url = url + createOrderedUrlParamFromMap(queryMap);
-    return execute(url, formBody, headerMap);
+    return execute(HttpMethod.POST,url, formBody, headerMap);
   }
 
   //post json提交
@@ -66,11 +63,11 @@ public class HttpUtil {
 
     RequestBody body = getRequestBody(MEDIA_TYPE_JSON, requestBodyJson);
     url = url + createOrderedUrlParamFromMap(queryMap);
-    return execute(url, body, headerMap);
+    return execute(HttpMethod.POST,url, body, headerMap);
   }
 
   /**
-   * post请求
+   * post请求.
    *
    * @param requestBody 请求体
    * @param queryMap url查询参数
@@ -81,10 +78,18 @@ public class HttpUtil {
 
     RequestBody body = getRequestBody(mediaType, requestBody);
     url = url + createOrderedUrlParamFromMap(queryMap);
-    return execute(url, body, headerMap);
+    return execute(HttpMethod.POST,url, body, headerMap);
   }
 
-  private static String execute(String url, RequestBody requestBody,
+  public static String execute(String httpMethod,String url, String requestBody,
+      Map<String, String> queryMap, Map<String, String> headerMap) throws Exception {
+
+    RequestBody body = null != requestBody ? getRequestBody(MEDIA_TYPE_JSON, requestBody) :null;
+    url = url + createOrderedUrlParamFromMap(queryMap);
+    return execute(httpMethod,url, body, headerMap);
+  }
+
+  private static String execute(String httpMethod,String url, RequestBody requestBody,
       Map<String, String> headerMap) throws IOException {
     //组装Headers
     Headers.Builder headerBuilder = new Headers.Builder();
@@ -93,12 +98,12 @@ public class HttpUtil {
     }
 
     //组装Request
-    Request.Builder requestBuilder
+    Request request
         = new Request.Builder()
         .url(url)
-        .headers(headerBuilder.build());
-    Request request = requestBody == null ? requestBuilder.get().build()
-        : requestBuilder.post(requestBody).build();
+        .method(httpMethod,requestBody)
+        .headers(headerBuilder.build())
+        .build();
 
     //发送请求
     Call call = okHttpClient.newCall(request);
@@ -143,7 +148,7 @@ public class HttpUtil {
   }
 
   /**
-   * 根据map组装成url参数，参数的顺序按照key排序
+   * 根据map组装成url参数，参数的顺序按照key排序.
    *
    * @return url参数，如：?age=18&name=tom
    */
@@ -156,22 +161,8 @@ public class HttpUtil {
         .filter(k -> null != queryMap.get(k))
         .sorted()
         .forEach(k -> params.append("&").append(k.trim()).append("=")
-            .append(queryMap.get(k).toString().trim())
-        );
+            .append(queryMap.get(k).toString().trim()));
     return "?" + params.subSequence(1, params.length()).toString();
   }
 
-  //添加日志拦截器
-  public static class HttpLogger implements HttpLoggingInterceptor.Logger {
-
-    private Logger logger;
-
-    public HttpLogger(Logger logger) {
-      this.logger = logger;
-    }
-
-    public void log(String message) {
-      logger.info("OkHttpLogInfo: {}", message);
-    }
-  }
 }
