@@ -46,7 +46,7 @@
 
 为了保证通信过程数据不被篡改和泄漏，所有和服务器通信数据必须经过加解密流程，下面会一一介绍
   加密/解密流程图：
-![流程图](http://o6wkmqikd.bkt.clouddn.com/scp_api_encryt%20%282%29.png)
+![流程图](http://cscdn.maxleap.cn/2.0/download/NTkxMmRhYThkN2U0NmYwMDA3NDhkOTk0/zcf-eeedda20-f926-484b-94bd-39bc535cad65)
 
 step1：本地生成RSA 公钥/私钥(pub_key/prv_key),密钥长度为2048字节。把公钥发给中证对接客户经理，自己保留好私钥(解密返回数据使用)
 

@@ -1,10 +1,12 @@
 package com.csci.demo;
 
-import com.csci.demo.client.CsciClient;
+import com.csci.demo.client.HerculesClient;
 import com.csci.demo.model.vo.ResponseVo;
 import com.csci.demo.utils.JsonUtil;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,9 +29,16 @@ public class CallApiDemoTest {
   //自己生成的RSA公钥，长度2048，需要提供给中证
   public static final String PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqYf2abIhq8oGFwTIVTY9sTOCQvSDlAFoa5AVB0s7lMlJ9V4G1dF7nZns7dUl29go7Eki/IzwuU+HsPyeSe9IqabMdD5rIWx5UJhHm8dQ4W6hFrDZf7d1hcYGpeCxLYyV/kccBg6LJWKkJTazQpCk1VqEEEJcX+ZIxN5skCEytpXNBcyHyPiZjzihk0l4UlqFOeF+TDI8FZ0Q4HnjyvA6up49nkYuJljyWqCXlbW4/jgNCbZZFklRcC5mlv2KlI7xS9a8z+r0Zt/7oEwyeAjK2qwwRg1OCuST6Nvk7h5dnm7e4WDhCtdsmu6iHjocbRK6DwDi8A6Z327ObCPCbwP3MwIDAQAB";
 
+  private HerculesClient herculesClient = new HerculesClient.Builder()
+      .basePath(BASE_PATH)
+      .channelCode(CHANNEL_CODE)
+      .localRsaPrvKey(PRIVATE_KEY)
+      .separator(SEPARATOR)
+      .remoteRsaPubKey(ZZ_PUBLIC_KEY)
+      .build();
+
   /**
-   * 对应接口：【测试接口1】
-   * 接口文档：【DEMO-快速对接文档.html】
+   * 对应接口：【测试接口1】 接口文档：【DEMO-快速对接文档.html】
    */
   @Test
   public void testGet() throws Exception {
@@ -40,20 +49,14 @@ public class CallApiDemoTest {
     Map<String, String> urlParamMap = new HashMap<>();
     urlParamMap.put("loanAppId", "order12345");
     urlParamMap.put("extendUserId", "user12345");
-
     //发送请求
-    ResponseVo responseVo = CsciClient
-        .get(BASE_PATH, uri, urlParamMap, CHANNEL_CODE,
-            PRIVATE_KEY, SEPARATOR);
-
+    ResponseVo responseVo = herculesClient.executeJson("GET", uri, null, urlParamMap);
     System.out.println("返回结果：" + responseVo);
-
     Assert.assertTrue("SUCCESS".equals(responseVo.getCode()));
   }
 
   /**
-   * 对应接口：【测试接口2】
-   * 接口文档：【DEMO-快速对接文档.html】
+   * 对应接口：【测试接口2】 接口文档：【DEMO-快速对接文档.html】
    */
   @Test
   public void testPost() throws Exception {
@@ -62,38 +65,31 @@ public class CallApiDemoTest {
     //业务数据
     RequestDto requestDto = new RequestDto("user1234",
         "1100000", "6222081991087490987");
-    String requestDataJson = JsonUtil.toJsonStr(requestDto);
 
-    //发送请求
-    ResponseVo responseVo = CsciClient
-        .postJson(BASE_PATH, uri, requestDataJson, CHANNEL_CODE,
-            PRIVATE_KEY, ZZ_PUBLIC_KEY, SEPARATOR);
-
+    ResponseVo responseVo = herculesClient
+        .executeJson("POST", uri, JsonUtil.toJsonStr(requestDto), null);
     System.out.println("返回结果：" + responseVo);
-
     Assert.assertTrue("SUCCESS".equals(responseVo.getCode()));
-
   }
-
-
 
   @Test
   public void creditResultQuery() throws Exception {
     //请求uri
-    String uri = String.format("/api/mock/v1/credit/%s/query","123");
-
-
+    String uri = String.format("/api/mock/v1/credit/%s/query", "123");
 
     //发送请求
-    ResponseVo responseVo = CsciClient
-        .get(BASE_PATH, uri, null, CHANNEL_CODE,
-            PRIVATE_KEY, SEPARATOR);
-
+    ResponseVo responseVo = herculesClient.executeJson("GET",uri,null,null);
     System.out.println("返回结果：" + responseVo);
 
     Assert.assertTrue("SUCCESS".equals(responseVo.getCode()));
   }
 
+  @Test
+  public void testGetDoc() throws Exception {
+    String uri = String.format("/api/v1/documents/download/%s/%s","14353488","6402330");
+    byte[] bytes = herculesClient.download("GET", uri, null);
+    FileUtils.writeByteArrayToFile(new File("tst.png"),bytes);
+  }
 
   public static class RequestDto {
 
