@@ -30,6 +30,18 @@ HerculesClient herculesClient = new HerculesClient.Builder()
 
 
 
+## 本地生成RSA秘钥
+
+```java
+ Map<String, String> keyPair = RSAUtils.genKeyPair();
+ String privateKey = keyPair.get(RSAUtils.PRIVATE_KEY);
+ String publicKey = keyPair.get(RSAUtils.PUBLIC_KEY);
+ System.out.println("公钥：" + publicKey);
+ System.out.println("私钥：" + privateKey);
+```
+
+
+
 ## 更多例子
 
 请参考`/test/java` 目录下的例子
