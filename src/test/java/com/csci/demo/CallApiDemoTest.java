@@ -1,6 +1,7 @@
 package com.csci.demo;
 
 import com.csci.demo.client.HerculesClient;
+import com.csci.demo.model.vo.DocumentDownloadReqVo;
 import com.csci.demo.model.vo.ResponseVo;
 import com.csci.demo.utils.JsonUtil;
 import java.io.File;
@@ -86,8 +87,11 @@ public class CallApiDemoTest {
 
   @Test
   public void testGetDoc() throws Exception {
-    String uri = String.format("/api/v1/documents/download/%s/%s","14353488","6402330");
-    byte[] bytes = herculesClient.download("GET", uri, null);
+    DocumentDownloadReqVo reqVo = new DocumentDownloadReqVo();
+    reqVo.setLoanApplyId("14353488");
+    reqVo.setDocId("6402330");
+    String uri = String.format("/api/v1/documents/download");
+    byte[] bytes = herculesClient.download("POST", uri, JsonUtil.toJsonStr(reqVo),null);
     FileUtils.writeByteArrayToFile(new File("tst.png"),bytes);
   }
 

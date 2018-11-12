@@ -160,9 +160,9 @@ public class HerculesClient {
   /**
    * 下载接口 接口返回内容不需要解密 .
    */
-  public byte[] download(String httpMethod, String uri, Map<String, String> urlParamMap)
+  public byte[] download(String httpMethod, String uri, String requestBoyJson,Map<String, String> urlParamMap)
       throws Exception {
-    return execute(httpMethod, uri, null, urlParamMap, SysConstant.MEDIA_TYPE_STREAM).bytes();
+    return execute(httpMethod, uri, requestBoyJson, urlParamMap, SysConstant.JSON).bytes();
   }
 
   //解析返回结果，并解密业务数据
