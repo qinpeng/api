@@ -57,6 +57,11 @@ public class RSAUtils {
 
   private static final String UTF8 = "UTF-8";
 
+  static {
+    java.security.Security.addProvider(
+        new org.bouncycastle.jce.provider.BouncyCastleProvider()
+    );
+  }
   //签名
   public static String sign(String data, String privateKey) throws Exception {
     byte[] signBytes = sign(data.getBytes(UTF8), privateKey);
