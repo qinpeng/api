@@ -28,12 +28,6 @@ public class DesUtils {
     System.err.println("解密后：" + decryptedDataString);
   }
 
-  private static byte[] stringToByteWithMd5(String key) throws Exception {
-    MessageDigest digest = MessageDigest.getInstance("md5");
-    digest.update(key.getBytes(SysConstant.UTF8));
-    byte[] bytes = digest.digest();
-    return bytes;
-  }
 
   /**
    * Description 根据键值进行加密
@@ -41,7 +35,7 @@ public class DesUtils {
    * @param key 加密键byte数组
    */
   public static String encrypt(String data, String key) throws Exception {
-    byte[] bt = encrypt(data.getBytes(SysConstant.UTF8), stringToByteWithMd5(key));
+    byte[] bt = encrypt(data.getBytes(SysConstant.UTF8), key.getBytes(SysConstant.UTF8));
     return Base64Utils.encode(bt);
   }
 
@@ -54,7 +48,7 @@ public class DesUtils {
     if (data == null) {
       return null;
     }
-    byte[] bt = decrypt(Base64Utils.decode(data), stringToByteWithMd5(key));
+    byte[] bt = decrypt(Base64Utils.decode(data), key.getBytes(SysConstant.UTF8));
     return new String(bt, SysConstant.UTF8);
   }
 
