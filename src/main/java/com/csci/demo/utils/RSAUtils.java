@@ -122,9 +122,11 @@ public class RSAUtils {
     try {
       byte[] keyBytes = Base64Utils.decode(privateKey);
       PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(keyBytes);
-      KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
-      Key privateK = keyFactory.generatePrivate(pkcs8KeySpec);
-      Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+      RSAPrivateKey privateK = (RSAPrivateKey)keyFactory.generatePrivate(pkcs8KeySpec);
+
+      int max_size = privateK.getModulus().bitLength()/8 ;
+      Cipher cipher = Cipher.getInstance("RSA");
       cipher.init(Cipher.DECRYPT_MODE, privateK);
       int inputLen = encryptedData.length;
       ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -133,14 +135,14 @@ public class RSAUtils {
       int i = 0;
       // 对数据分段解密
       while (inputLen - offSet > 0) {
-        if (inputLen - offSet > MAX_DECRYPT_BLOCK) {
-          cache = cipher.doFinal(encryptedData, offSet, MAX_DECRYPT_BLOCK);
+        if (inputLen - offSet > max_size) {
+          cache = cipher.doFinal(encryptedData, offSet, max_size);
         } else {
           cache = cipher.doFinal(encryptedData, offSet, inputLen - offSet);
         }
         out.write(cache, 0, cache.length);
         i++;
-        offSet = i * MAX_DECRYPT_BLOCK;
+        offSet = i * max_size;
       }
       byte[] decryptedData = out.toByteArray();
       out.close();
@@ -158,9 +160,10 @@ public class RSAUtils {
     byte[] keyBytes = Base64Utils.decode(publicKey);
     X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(keyBytes);
     KeyFactory keyFactory = KeyFactory.getInstance(KEY_ALGORITHM);
-    Key publicK = keyFactory.generatePublic(x509KeySpec);
+    RSAPublicKey publicK = (RSAPublicKey)keyFactory.generatePublic(x509KeySpec);
+    int max_size = publicK.getModulus().bitLength()/8 -11;
     // 对数据加密
-    Cipher cipher = Cipher.getInstance(keyFactory.getAlgorithm());
+    Cipher cipher = Cipher.getInstance("RSA");
     cipher.init(Cipher.ENCRYPT_MODE, publicK);
     int inputLen = data.length;
     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -169,14 +172,14 @@ public class RSAUtils {
     int i = 0;
     // 对数据分段加密
     while (inputLen - offSet > 0) {
-      if (inputLen - offSet > MAX_ENCRYPT_BLOCK) {
-        cache = cipher.doFinal(data, offSet, MAX_ENCRYPT_BLOCK);
+      if (inputLen - offSet > max_size) {
+        cache = cipher.doFinal(data, offSet, max_size);
       } else {
         cache = cipher.doFinal(data, offSet, inputLen - offSet);
       }
       out.write(cache, 0, cache.length);
       i++;
-      offSet = i * MAX_ENCRYPT_BLOCK;
+      offSet = i * max_size;
     }
     byte[] encryptedData = out.toByteArray();
     out.close();
