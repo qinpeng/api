@@ -31,8 +31,8 @@ public class HerculesClient {
   public  OkHttpClient okHttpClient;
 
   public static final String DEFAULT_SEPARATOR = "@";
-  public static final long DEFAULT_READ_TIMEOUT = 30 * 1000;
-  public static final long DEFAULT_WRITE_TIMEOUT = 30 * 1000;
+  public static final long DEFAULT_READ_TIMEOUT = 120 * 1000;
+  public static final long DEFAULT_WRITE_TIMEOUT = 120 * 1000;
   public static final long DEFAULT_CONNECT_TIMEOUT = 5 * 1000;
 
   private String channelCode;

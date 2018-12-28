@@ -2,11 +2,20 @@ package com.csci.demo;
 
 import com.csci.demo.client.HerculesClient;
 import com.csci.demo.model.vo.DocumentDownloadReqVo;
+import com.csci.demo.model.vo.DocumentDownloadRespVo;
+import com.csci.demo.model.vo.DocumentUploadReqVo;
+import com.csci.demo.model.vo.FileListVo;
 import com.csci.demo.model.vo.ResponseVo;
+import com.csci.demo.utils.Base64Utils;
 import com.csci.demo.utils.JsonUtil;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Supplier;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,16 +26,19 @@ public class CallApiDemoTest {
   public static final String SEPARATOR = "@";
 
   //中证域名，中证提供
-  public static final String BASE_PATH = "http://scpgateway-ls.dev.chinacsci.com";
+  //public static final String BASE_PATH = "http://scpgateway-ls.dev.chinacsci.com";
+  public static final String BASE_PATH = "http://bifrost-ls.demo.chinacsci.com";
+  //public static final String BASE_PATH = "http://bifrost-ls.chinacsci.com";
   //public static final String BASE_PATH = "http://localhost:8081";
 
   //渠道编号，中证提供
   public static final String CHANNEL_CODE = "JUN_TUO";
   //中证的RSA公钥，中证提供
-  public static final String ZZ_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUHEIelz3g/Gqg8VNK0VSS4Jc1\n"
-      + "zBAh+02XkQGyT6LeysuXXKoalBR3yVFWMnxF7qkcCSV+R5bakx6IUlR/u1hCb7Qf\n"
-      + "OXbdgBMOKbT4Q5XyhiCGr/0GNdzVLxKCiu8e/ee/QOMwIotKYrt0KRveXbKTWE6g\n"
-      + "5HI55Y2sD6zvl0JQfQIDAQAB";
+  public static final String ZZ_PUBLIC_KEY =
+      "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUHEIelz3g/Gqg8VNK0VSS4Jc1\n"
+          + "zBAh+02XkQGyT6LeysuXXKoalBR3yVFWMnxF7qkcCSV+R5bakx6IUlR/u1hCb7Qf\n"
+          + "OXbdgBMOKbT4Q5XyhiCGr/0GNdzVLxKCiu8e/ee/QOMwIotKYrt0KRveXbKTWE6g\n"
+          + "5HI55Y2sD6zvl0JQfQIDAQAB";
 
   //自己生成的RSA私钥，长度2048
   public static final String PRIVATE_KEY = "MIICXgIBAAKBgQC/7MjGQgc/xU7Hj6OM3Ea7ZUV6FrtV+bKLF7CH0/VCS0vFmtaOJLTrfqds4lLBIHJbQ0C6GWSDGSF1cdzY/r09ppTenazlQjcDz8RjwtfIZrAk6n0plRCC3rfxcxgAeEp2B4wO97RCbELw2BrYWR3NV+WEz6B3m1P30rky/cyJLQIDAQABAoGBAJvViewYnsQz09SLl7N/A9uSzgfkvzV+6m6vzIFtI94xPxPytjVyLohsLUtmtOTlEJVzlPHGPmuIEzfGPRjgNgyYezpU0ePJ5s7Ggrb4ty2WKkyQfFuKNkymbpHQUzCP234kKdz5xO+aZ0406oV07ZV3is2oeeUQ/c2jvuiZsJphAkEA8k7KWEMdYGiwhNKtYjN8F07nK7xB2gWc4Szdet/DB4xr+l2DSsGTD0n+yojFofOz12W5TNHL6dLPJui4G4UhdQJBAMrFKKeNtwacZl3DC3hG3DcsE+a/HY0+d3PjpQgkwurWNYE5c35BFyzKy/+CgN4R07NeLP3xerqi2xpk37xb2dkCQQDhgPJPsiZk0wl0k51JByE1j/kUet/OR+r4pQh6kkSvgb/8AYtuxzhVwkedtiw3zNZSYBlTpOxhcA/Z5jtxYTUBAkEAmG/yKUyzvOeVWYXJOKnk4iFj8MPavpWojdok9mNUmeFiJfz/43mhp43qIPOGV+yE/8KcBmkk/+xw1X3iaaOPuQJARdcAClvpWUZfUadWqHOkhksKLjKm0FtoBs6NnfwwbDVAEC+iAuX6oYSQgmP+6wmeTuagy/j0GC6rWhSskKSoZQ==";
@@ -82,7 +94,7 @@ public class CallApiDemoTest {
     String uri = String.format("/api/mock/v1/credit/%s/query", "123");
 
     //发送请求
-    ResponseVo responseVo = herculesClient.executeJson("GET",uri,null,null);
+    ResponseVo responseVo = herculesClient.executeJson("GET", uri, null, null);
     System.out.println("返回结果：" + responseVo);
 
     Assert.assertTrue("SUCCESS".equals(responseVo.getCode()));
@@ -93,16 +105,83 @@ public class CallApiDemoTest {
     DocumentDownloadReqVo reqVo = new DocumentDownloadReqVo();
     reqVo.setLoanApplyId("14353488");
     reqVo.setDocId("6402330");
+
     String uri = String.format("/api/v1/documents/download");
-    byte[] bytes = herculesClient.download("POST", uri, JsonUtil.toJsonStr(reqVo),null);
-    FileUtils.writeByteArrayToFile(new File("tst.png"),bytes);
+    byte[] bytes = herculesClient.download("POST", uri, JsonUtil.toJsonStr(reqVo), null);
+    FileUtils.writeByteArrayToFile(new File("tst.png"), bytes);
+  }
+
+  @Test
+  public void testGetDocV2() throws Exception {
+    DocumentDownloadReqVo reqVo = new DocumentDownloadReqVo();
+    reqVo.setLoanApplyId("14353848");
+    reqVo.setDocId("6402658");
+
+    String uri = String.format("/api/v2/documents/download");
+    ResponseVo responseVo =  herculesClient.executeJson("POST", uri, JsonUtil.toJsonStr(reqVo), null);
+    DocumentDownloadRespVo downloadRespVo = JsonUtil.json2Object(responseVo.getData(),
+        DocumentDownloadRespVo.class);
+    FileUtils.writeByteArrayToFile(new File(downloadRespVo.getFileName()), Base64Utils.decode(downloadRespVo.getFileContent()));
   }
 
 
   @Test
   public void listDoc() throws Exception {
     String uri = String.format("/api/mock/v1/documents/lists");
-    ResponseVo responseVo = herculesClient.executeJson("POST", uri, "{\"loanApplyId\":\"1\",\"docType\":\"IDENTITY_CARD_FRONT\"}",null);
+    ResponseVo responseVo = herculesClient
+        .executeJson("POST", uri, "{\"loanApplyId\":\"1\",\"docType\":\"IDENTITY_CARD_FRONT\"}",
+            null);
+    System.out.println(responseVo);
+  }
+
+
+
+  @Test
+  public void creditQuery() throws Exception {
+    String uri = String.format(" /api/mock/v1/credit/%s/query", "CPMsyGQUYu");
+    ResponseVo responseVo = herculesClient.executeJson("GET", uri, null, null);
+    System.out.println(responseVo);
+  }
+
+  @Test
+  public void offlineApply() throws Exception {
+    String uri = "/api/mock/v1/repayment/offline/apply";
+    ResponseVo responseVo = herculesClient.executeJson("POST", uri,
+        "{\"transName\":\"张三\",\"transAccount\":\"14353475\",\"transAmount\":100,\"payType\":\"1\",\"payList\":[{\"loanApplyId\":\"IFrnmzqXEX\",\"payAmount\":100}]}",
+        null);
+    System.out.println(responseVo);
+  }
+
+  @Test
+  public void fullRepay() throws Exception {
+    String uri = "/api/mock/v1/loan//repayment/full-prepay/123456";
+    ResponseVo responseVo = herculesClient.executeJson("POST", uri,
+        "{\n"
+            + "\t\"prepayDate\":150000000\n"
+            + "}",
+        null);
+    System.out.println(responseVo);
+  }
+
+  @Test
+  public void upload() throws Exception{
+    String uri="/api/v1/documents/upload";
+    DocumentUploadReqVo documentUploadReqVo = new DocumentUploadReqVo();
+    documentUploadReqVo.setLoanApplyId("14353834");
+    documentUploadReqVo.setDocType("LOAN_APPLY_FORM");
+
+    byte[] bytes = FileUtils.readFileToByteArray(new File(""));
+    System.out.println(bytes.length);
+    FileListVo fileListVo = new FileListVo();
+    fileListVo.setFileName("test.png");
+    List<FileListVo> fileList = new ArrayList<>();
+    fileList.add(fileListVo);
+    fileListVo.setEncryptContent(Base64Utils.encode(bytes));
+    documentUploadReqVo.setFileList(fileList);
+    String requestDataJson = JsonUtil.toJsonStr(documentUploadReqVo);
+    System.out.println(requestDataJson.getBytes().length);
+    ResponseVo responseVo = herculesClient
+        .executeJson("POST",uri,requestDataJson, null);
     System.out.println(responseVo);
   }
 
